@@ -32,12 +32,14 @@
                     icon.addEventListener('click', function () {
                         var app = icon.getAttribute('data-app');
 
-                        /* ====== 这里是唯一修改：新增3行 ====== */
                         if (app === 'settings' && window.Settings) {
                             window.Settings.open();
                             return;
                         }
-                        /* ====== 修改结束 ====== */
+                        if (app === 'chat' && window.ChatApp) {
+                            window.ChatApp.open();
+                            return;
+                        }
 
                         console.log('打开: ' + (names[app] || app));
                     });
