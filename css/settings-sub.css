@@ -1,0 +1,451 @@
+/* ===== API / 语音 二级页专用样式 ===== */
+
+/* 输入行（含右侧按钮） */
+.sf-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sf-input-row .sf-input {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 行内图标按钮 */
+.sf-icon-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    border-radius: 6px;
+    transition: background .12s ease;
+}
+
+.sf-icon-btn:active {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* 拉取按钮 */
+.sf-fetch-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: none;
+    background: rgba(90, 110, 174, 0.12);
+    color: #5b6eae;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .12s ease;
+    white-space: nowrap;
+}
+
+.sf-fetch-btn:active {
+    transform: scale(.92);
+}
+
+/* 原生 select 美化 */
+.sf-select-native {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text, #1a1a1a);
+    padding: 10px 0;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+    outline: none;
+}
+
+/* 滑块容器 */
+.sf-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 12px;
+    margin-bottom: 4px;
+}
+
+.sf-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.1);
+    outline: none;
+    accent-color: #555;
+}
+
+.sf-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #555;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.sf-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #555;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.sf-slider-label {
+    font-size: 10px;
+    color: #999;
+    flex-shrink: 0;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* 标签后缀提示 */
+.sf-label-hint {
+    font-weight: 500;
+    color: #555;
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* 操作提示文字 */
+.sf-hint {
+    font-size: 11px;
+    color: #aaa;
+    padding: 2px 4px 8px;
+    line-height: 1.4;
+}
+
+/* 功能按钮（测试/试听） */
+.sf-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 11px;
+    margin-top: 8px;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #444;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .12s ease;
+}
+
+.sf-action-btn:active {
+    transform: scale(.97);
+}
+
+/* 状态提示 */
+.sf-status {
+    font-size: 12px;
+    padding: 6px 4px;
+    line-height: 1.4;
+    min-height: 20px;
+    text-align: center;
+}
+
+.sf-status-loading {
+    color: #888;
+}
+
+.sf-status-success {
+    color: #4a9;
+}
+
+.sf-status-error {
+    color: #c55;
+}
+
+/* 预设信息 */
+.sf-preset-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.sf-preset-detail {
+    font-size: 11px;
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 预设删除按钮 */
+.sf-preset-del {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(200, 80, 80, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #c55;
+    margin-right: 4px;
+    transition: transform .12s ease;
+}
+
+.sf-preset-del:active {
+    transform: scale(.85);
+}
+
+/* 板块标题 */
+.sf-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text, #1a1a1a);
+    padding: 6px 0 2px;
+}
+
+.sf-section-title svg {
+    color: #9b6eb5;
+}
+
+/* ===== 音色选择网格 ===== */
+.sf-voice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.sf-voice-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform .12s ease, border-color .15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.sf-voice-card:active {
+    transform: scale(.93);
+}
+
+.sf-voice-card.active {
+    border-color: #9b6eb5;
+    background: rgba(180, 130, 200, 0.1);
+}
+
+.sf-voice-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(180, 130, 200, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9b6eb5;
+}
+
+.sf-voice-card.active .sf-voice-avatar {
+    background: rgba(180, 130, 200, 0.25);
+}
+
+.sf-voice-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text, #1a1a1a);
+    text-align: center;
+    line-height: 1.2;
+}
+
+.sf-voice-gender {
+    font-size: 9px;
+    color: #aaa;
+}
+
+/* 响应式 */
+@media screen and (max-width: 340px) {
+    .sf-voice-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* textarea 试听文本 */
+.sf-textarea {
+    resize: vertical;
+    min-height: 60px;
+    max-height: 150px;
+    line-height: 1.5;
+    padding: 10px 0;
+}
+
+/* 模型条目右侧小标签（显示端点名） */
+.sf-item-tag {
+    font-size: 10px;
+    color: #999;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+/* ===== 壁纸设置专用 ===== */
+
+/* 预览容器 */
+.sf-wp-preview-wrap {
+    margin-bottom: 8px;
+}
+
+.sf-wp-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 17;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.sf-wp-preview-inner {
+    position: absolute;
+    inset: 0;
+    background: var(--bg, #d4d4d4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sf-wp-loading {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 预览中的模拟状态栏 */
+.sf-wp-statusbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.sf-wp-island {
+    width: 50px;
+    height: 14px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+}
+
+/* 壁纸信息覆盖层 */
+.sf-wp-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 12px 10px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.35));
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    letter-spacing: 0.3px;
+    pointer-events: none;
+}
+
+/* 操作卡片区 */
+.sf-wp-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.sf-wp-action-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .12s ease, background .15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.sf-wp-action-card:active {
+    transform: scale(.98);
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.sf-wp-action-card svg {
+    flex-shrink: 0;
+    color: #5ea88e;
+}
+
+.sf-wp-action-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text, #1a1a1a);
+    flex: 1;
+}
+
+.sf-wp-action-hint {
+    font-size: 11px;
+    color: #999;
+    flex-shrink: 0;
+}

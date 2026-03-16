@@ -1,0 +1,59 @@
+#status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: env(safe-area-inset-top, 44px);
+    min-height: 44px;
+    color: #1a1a1a;
+    font-size: 12px;
+    font-weight: 600;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.status-left {
+    flex: 1;
+}
+
+#status-time {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .4px;
+}
+
+.status-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.dynamic-island {
+    width: 90px;
+    height: 24px;
+    background: #111;
+    border-radius: 14px;
+}
+
+.status-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+}
+
+.status-icon {
+    width: 14px;
+    height: 14px;
+}
+
+#battery-percent {
+    font-size: 11px;
+    margin-left: 1px;
+}

@@ -1,0 +1,951 @@
+/* ===== 设置APP ===== */
+#settings-page {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg, #d4d4d4);
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform .35s cubic-bezier(.32, .72, 0, 1);
+    will-change: transform;
+}
+
+#settings-page.open {
+    transform: translateY(0);
+}
+
+/* 顶栏 */
+.settings-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: calc(env(safe-area-inset-top, 44px) + 8px) 16px 10px;
+    gap: 10px;
+}
+
+.settings-back {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .12s ease;
+    flex-shrink: 0;
+}
+
+.settings-back:active {
+    transform: scale(.88);
+}
+
+.settings-back svg {
+    width: 16px;
+    height: 16px;
+    color: #333;
+}
+
+.settings-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text, #1a1a1a);
+    letter-spacing: .3px;
+}
+
+/* 滚动区域 */
+.settings-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 6px 16px 24px;
+}
+
+.settings-body::-webkit-scrollbar {
+    display: none;
+}
+
+/* 板块组 */
+.settings-group {
+    margin-bottom: 10px;
+}
+
+/* 胶囊条 */
+.settings-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    transition: transform .12s ease, background .15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.settings-item:active {
+    transform: scale(.98);
+    background: rgba(255, 255, 255, 0.7);
+}
+
+/* 圆角：单项 */
+.settings-group .settings-item:only-child {
+    border-radius: 14px;
+}
+
+/* 圆角：第一项 */
+.settings-group .settings-item:first-child {
+    border-radius: 14px 14px 0 0;
+}
+
+/* 圆角：最后一项 */
+.settings-group .settings-item:last-child {
+    border-radius: 0 0 14px 14px;
+    border-top: none;
+}
+
+/* 圆角：既是第一又是最后（只有一个） */
+.settings-group .settings-item:first-child:last-child {
+    border-radius: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+/* 中间项 */
+.settings-group .settings-item:not(:first-child):not(:last-child) {
+    border-radius: 0;
+    border-top: none;
+}
+
+/* 分隔线（用border-top替代，已在上方处理） */
+.settings-group .settings-item+.settings-item {
+    border-top: none;
+    position: relative;
+}
+
+.settings-group .settings-item+.settings-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 52px;
+    right: 14px;
+    height: .5px;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* 图标容器 */
+.settings-item-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.settings-item-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* 各项图标颜色 */
+.si-api .settings-item-icon {
+    background: rgba(120, 140, 200, 0.25);
+    color: #5b6eae;
+}
+
+.si-voice .settings-item-icon {
+    background: rgba(180, 130, 200, 0.25);
+    color: #9b6eb5;
+}
+
+.si-wallpaper .settings-item-icon {
+    background: rgba(130, 190, 170, 0.25);
+    color: #5ea88e;
+}
+
+.si-appicon .settings-item-icon {
+    background: rgba(220, 160, 120, 0.25);
+    color: #c08050;
+}
+
+.si-font .settings-item-icon {
+    background: rgba(200, 140, 160, 0.25);
+    color: #b06880;
+}
+
+.si-ringtone .settings-item-icon {
+    background: rgba(140, 180, 210, 0.25);
+    color: #5a8aaa;
+}
+
+.si-data .settings-item-icon {
+    background: rgba(180, 170, 140, 0.25);
+    color: #9a8a60;
+}
+
+.si-screen .settings-item-icon {
+    background: rgba(100, 180, 220, 0.25);
+    color: #4a9ec0;
+}
+
+/* 文字区 */
+.settings-item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.settings-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text, #1a1a1a);
+    line-height: 1.3;
+}
+
+.settings-item-desc {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.3;
+    margin-top: 1px;
+}
+
+/* 右箭头 */
+.settings-item-arrow {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: #bbb;
+}
+
+/* ===== 二级页面容器 ===== */
+.settings-sub {
+    position: absolute;
+    inset: 0;
+    z-index: 110;
+    background: var(--bg, #d4d4d4);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .3s cubic-bezier(.32, .72, 0, 1);
+    will-change: transform;
+}
+
+.settings-sub.open {
+    transform: translateX(0);
+}
+
+.settings-sub .settings-header {
+    padding-top: calc(env(safe-area-inset-top, 44px) + 8px);
+}
+
+.settings-sub .settings-body {
+    padding: 10px 16px 30px;
+}
+
+/* 二级页通用表单样式 */
+.sf-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 14px 4px 6px;
+}
+
+.sf-input-wrap {
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 12px;
+    padding: 0 12px;
+    margin-bottom: 4px;
+}
+
+.sf-input {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text, #1a1a1a);
+    outline: none;
+}
+
+.sf-input::placeholder {
+    color: #bbb;
+}
+
+/* 选择列表 */
+.sf-select-group {
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.sf-select-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background .12s ease;
+    gap: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.sf-select-item:active {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.sf-select-item+.sf-select-item {
+    position: relative;
+}
+
+.sf-select-item+.sf-select-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14px;
+    right: 14px;
+    height: .5px;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.sf-select-item .sf-name {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text, #1a1a1a);
+}
+
+.sf-select-item .sf-check {
+    width: 16px;
+    height: 16px;
+    color: transparent;
+    transition: color .15s ease;
+}
+
+.sf-select-item.active .sf-check {
+    color: #555;
+}
+
+/* 保存按钮 */
+.sf-save-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin-top: 16px;
+    border: none;
+    border-radius: 14px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .12s ease;
+}
+
+.sf-save-btn:active {
+    transform: scale(.97);
+}
+
+/* 壁纸预览 */
+.sf-wallpaper-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.sf-wallpaper-item {
+    aspect-ratio: 9 / 16;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color .15s ease, transform .12s ease;
+    position: relative;
+}
+
+.sf-wallpaper-item:active {
+    transform: scale(.95);
+}
+
+.sf-wallpaper-item.active {
+    border-color: #555;
+}
+
+.sf-wallpaper-color {
+    width: 100%;
+    height: 100%;
+}
+
+.sf-wallpaper-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1.5px dashed #ccc;
+    border-radius: 10px;
+    aspect-ratio: 9 / 16;
+    cursor: pointer;
+    position: relative;
+    transition: transform .12s ease;
+}
+
+.sf-wallpaper-custom:active {
+    transform: scale(.95);
+}
+
+.sf-wallpaper-custom svg {
+    width: 24px;
+    height: 24px;
+    color: #aaa;
+}
+
+/* 危险操作 */
+.sf-danger-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(220, 80, 80, 0.12);
+    color: #c44;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .12s ease;
+}
+
+.sf-danger-btn:active {
+    transform: scale(.97);
+}
+
+/* 存储信息 */
+.sf-info-card {
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 8px;
+}
+
+.sf-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 13px;
+    color: #555;
+}
+
+.sf-info-row span:last-child {
+    font-weight: 500;
+    color: var(--text, #1a1a1a);
+}
+
+/* toast提示 */
+.settings-toast {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #fff;
+    font-size: 13px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none;
+    z-index: 200;
+    white-space: nowrap;
+}
+
+.settings-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* 桌面端 phone-container 内定位 */
+@media screen and (min-width: 501px) {
+    #settings-page {
+        border-radius: 44px;
+    }
+
+    .settings-header {
+        padding-top: 20px;
+    }
+
+    .settings-sub .settings-header {
+        padding-top: 20px;
+    }
+}
+
+/* ===== 应用图标设置专用 ===== */
+
+.sf-appicon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.sf-appicon-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+}
+
+.sf-appicon-preview {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sf-appicon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sf-appicon-svg {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.sf-appicon-svg svg {
+    width: 100%;
+    height: 100%;
+}
+
+.sf-appicon-placeholder {
+    font-size: 18px;
+    color: #ccc;
+    font-weight: 600;
+}
+
+.sf-appicon-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.sf-appicon-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text, #1a1a1a);
+    line-height: 1.3;
+}
+
+.sf-appicon-status {
+    font-size: 11px;
+    color: #999;
+    line-height: 1.3;
+    margin-top: 1px;
+}
+
+.sf-appicon-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.sf-appicon-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .12s ease;
+    white-space: nowrap;
+}
+
+.sf-appicon-btn:active {
+    transform: scale(.92);
+}
+
+.sf-appicon-change {
+    background: rgba(90, 140, 200, 0.12);
+    color: #5a8ac8;
+}
+
+.sf-appicon-reset {
+    background: rgba(200, 100, 100, 0.1);
+    color: #c06060;
+}
+
+/* ===== 通用提示文字 ===== */
+.sf-hint {
+    font-size: 11px;
+    color: #999;
+    padding: 2px 4px 8px;
+    line-height: 1.4;
+}
+
+.sf-status {
+    font-size: 12px;
+    padding: 6px 4px;
+    line-height: 1.4;
+}
+
+.sf-status-loading {
+    color: #888;
+}
+
+.sf-status-success {
+    color: #5ea88e;
+}
+
+.sf-status-error {
+    color: #c44;
+}
+
+/* ===== 字体设置专用 ===== */
+.sf-font-preview {
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    padding: 20px 16px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.sf-font-preview-text {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text, #1a1a1a);
+    transition: font-family .3s ease;
+}
+
+/* 颜色选择网格 */
+.sf-color-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.sf-color-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .12s ease, transform .12s ease;
+    border: 2px solid transparent;
+}
+
+.sf-color-item:active {
+    transform: scale(.92);
+}
+
+.sf-color-item.active {
+    border-color: #555;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.sf-color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.sf-color-name {
+    font-size: 9px;
+    color: #888;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* ===== 铃声设置专用 ===== */
+.sf-ring-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+
+.sf-ring-play-btn,
+.sf-ring-stop-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .12s ease;
+    flex-shrink: 0;
+}
+
+.sf-ring-play-btn {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.sf-ring-stop-btn {
+    background: rgba(200, 80, 80, 0.15);
+    color: #c44;
+}
+
+.sf-ring-play-btn:active,
+.sf-ring-stop-btn:active {
+    transform: scale(.88);
+}
+
+.sf-ring-play-btn:disabled,
+.sf-ring-stop-btn:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.sf-ring-progress {
+    flex: 1;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.sf-ring-bar {
+    height: 100%;
+    width: 0%;
+    background: #1a1a1a;
+    border-radius: 2px;
+    transition: width .1s linear;
+}
+
+/* ===== 屏幕调整专用 ===== */
+.sf-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.sf-filter-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color .15s ease, transform .12s ease;
+}
+
+.sf-filter-item:active {
+    transform: scale(.92);
+}
+
+.sf-filter-item.active {
+    border-color: #555;
+}
+
+.sf-filter-preview {
+    width: 100%;
+    aspect-ratio: 9/14;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #d4d4d4;
+}
+
+.sf-filter-demo {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e8a0b4 0%, #88c8a8 33%, #7eb8d8 66%, #f5f0e8 100%);
+}
+
+.sf-filter-name {
+    font-size: 9px;
+    color: #666;
+    text-align: center;
+}
+
+/* 开关 */
+.sf-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+
+.sf-toggle-text {
+    font-size: 14px;
+    color: var(--text, #1a1a1a);
+}
+
+.sf-toggle {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    display: inline-block;
+}
+
+.sf-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.sf-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 26px;
+    cursor: pointer;
+    transition: background .25s ease;
+}
+
+.sf-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 2px;
+    bottom: 2px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.sf-toggle input:checked+.sf-toggle-slider {
+    background: #555;
+}
+
+.sf-toggle input:checked+.sf-toggle-slider::before {
+    transform: translateX(18px);
+}
+
+/* 布局列表 */
+.sf-layout-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.sf-layout-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 12px;
+}
+
+.sf-layout-handle {
+    font-size: 14px;
+    color: #bbb;
+    cursor: grab;
+}
+
+.sf-layout-name {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text, #1a1a1a);
+}
+
+.sf-layout-arrows {
+    display: flex;
+    gap: 4px;
+}
+
+.sf-layout-up,
+.sf-layout-down {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    color: #666;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .1s ease;
+}
+
+.sf-layout-up:active,
+.sf-layout-down:active {
+    transform: scale(.85);
+}
+
+/* ===== 板块小标题 ===== */
+.sf-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    padding: 4px 0 8px;
+}
