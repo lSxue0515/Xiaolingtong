@@ -220,13 +220,22 @@
             }
         },
 
-        /* ── 新增：应用屏幕垂直偏移 ── */
+        /* ── 应用屏幕垂直偏移（用 translateY 平移整个手机壳） ── */
         applyOffset: function (px) {
-            var container = document.getElementById('phone-container');
-            if (!container) return;
             var val = parseInt(px, 10) || 0;
-            container.style.paddingTop = val > 0 ? val + 'px' : '';
-            container.style.marginTop = val < 0 ? val + 'px' : '';
+
+            /* 优先移动 phone-shell，其次 phone-container */
+            var target = document.getElementById('phone-shell') ||
+                document.getElementById('phone-container');
+            if (!target) return;
+
+            if (val === 0) {
+                target.style.transform = '';
+                target.style.webkitTransform = '';
+            } else {
+                target.style.transform = 'translateY(' + val + 'px)';
+                target.style.webkitTransform = 'translateY(' + val + 'px)';
+            }
         },
 
         /* 启动时应用 */
