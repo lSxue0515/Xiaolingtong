@@ -220,21 +220,47 @@
             }
         },
 
-        /* ── 应用屏幕垂直偏移（用 translateY 平移整个手机壳） ── */
+        /* ── 应用屏幕垂直偏移 ──
+    原理：给 phone-container 加 paddingTop 把内容整体下推，
+          同时给 phone-shell 加等量负的 marginTop（clip 溢出），
+          让底部 Dock 不被遮挡、顶部多余空间被裁掉。        */
         applyOffset: function (px) {
             var val = parseInt(px, 10) || 0;
 
-            /* 优先移动 phone-shell，其次 phone-container */
-            var target = document.getElementById('phone-shell') ||
-                document.getElementById('phone-container');
-            if (!target) return;
+            var shell = document.getElementById('phone-shell');
+            var container = document.getElementById('phone-container');
 
-            if (val === 0) {
-                target.style.transform = '';
-                target.style.webkitTransform = '';
-            } else {
-                target.style.transform = 'translateY(' + val + 'px)';
-                target.style.webkitTransform = 'translateY(' + val + 'px)';
+            /* 先清除上次的设置 */
+            if (shell) {
+                shell.style.transform = '';
+                shell.style.webkitTransform = '';
+                shell.style.overflow = '';
+            }
+            if (container) {
+                container.style.transform = '';
+                container.style.webkitTransform = '';
+                container.style.paddingTop = '';
+                container.style.boxSizing = '';
+                container.style.height = '';
+            }
+
+            if (val === 0) return;
+
+            /* 方案：phone-container 整体向下 translateY(val)，
+               phone-shell 设 overflow:hidden 裁掉顶部溢出，
+               同时让 phone-container 的高度补偿（shrink），
+               底部内容不被遮挡。                               */
+            if (container) {
+                /* 向下平移内容区 */
+                container.style.transform = 'translateY(' + val + 'px)';
+                container.style.webkitTransform = 'translateY(' + val + 'px)';
+                /* 同时缩减高度，使底部和 shell 底边对齐 */
+                container.style.height = 'calc(100% - ' + val + 'px)';
+                container.style.boxSizing = 'border-box';
+            }
+            if (shell) {
+                /* 裁掉上方因平移产生的空白 + 保证底部不溢出 */
+                shell.style.overflow = 'hidden';
             }
         },
 
