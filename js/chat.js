@@ -1183,10 +1183,18 @@
             body.addEventListener('click', function (e) {
                 var polaroid = e.target.closest('.chat-me-polaroid[data-menu="sticker"]');
                 if (!polaroid) return;
-                /* 阻止触发图片文件选择 */
                 if (e.target.closest('.polaroid-img-input')) return;
                 e.stopPropagation();
                 self.openStickerManagerPage();
+            });
+
+            /* 拦截收藏板块点击 → 打开收藏页 */
+            body.addEventListener('click', function (e) {
+                var polaroid = e.target.closest('.chat-me-polaroid[data-menu="fav"]');
+                if (!polaroid) return;
+                if (e.target.closest('.polaroid-img-input')) return;
+                e.stopPropagation();
+                self.openFavPage();
             });
 
             /* 加载已保存的拍立得图片 */
@@ -3262,6 +3270,11 @@
                 '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' +
                 '<span>引用</span></div>';
 
+            /* 收藏 */
+            items += '<div class="cr-bubble-menu-item" data-action="fav">' +
+                '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>' +
+                '<span>收藏</span></div>';
+
             /* 多选 */
             items += '<div class="cr-bubble-menu-item" data-action="multiselect">' +
                 '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><polyline points="9 11 12 14 22 4"/></svg>' +
@@ -3271,7 +3284,8 @@
 
             /* 定位 */
             msgArea.style.position = 'relative';
-            var menuW = 140, menuH = (m.role === 'char' ? 6 : 5) * 40;
+            /* 每个菜单项高度约36px，char多一个「重回」，所有角色都多一个「收藏」 */
+            var menuW = 140, menuH = (m.role === 'char' ? 7 : 6) * 36;
             if (x + menuW > msgArea.clientWidth) x = msgArea.clientWidth - menuW - 10;
             if (x < 10) x = 10;
             if (y + menuH > msgArea.scrollTop + msgArea.clientHeight) y = y - menuH;
@@ -3295,6 +3309,7 @@
                     case 'recall': self.recallMsg(sub, charId, idx); break;
                     case 'quote': self.quoteMsg(sub, charId, idx); break;
                     case 'multiselect': self.enterMultiSelect(sub, charId, idx); break;
+                    case 'fav': self.favMsg(charId, idx); break;
                 }
             });
 
@@ -3310,6 +3325,133 @@
         removeBubbleMenu: function (sub) {
             var m = sub ? sub.querySelector('#cr-bubble-menu') : document.getElementById('cr-bubble-menu');
             if (m) m.remove();
+        },
+
+        /* ====== 收藏消息 ====== */
+        favMsg: function (charId, idx) {
+            var self = this;
+            var d = loadData();
+            var msgs = (d.chatHistory && d.chatHistory[charId]) || [];
+            var m = msgs[idx];
+            if (!m || m.recalled) { self.toast('无法收藏此消息'); return; }
+
+            /* 获取角色名 */
+            var chars = d.characters || [];
+            var charName = charId;
+            for (var ci = 0; ci < chars.length; ci++) {
+                if (chars[ci].id === charId) { charName = chars[ci].name || charId; break; }
+            }
+
+            /* 初始化收藏列表 */
+            if (!d.favorites) d.favorites = [];
+
+            /* 去重：同一条消息不重复收藏 */
+            for (var fi = 0; fi < d.favorites.length; fi++) {
+                if (d.favorites[fi].charId === charId && d.favorites[fi].msgIdx === idx) {
+                    self.toast('已收藏过啦～');
+                    return;
+                }
+            }
+
+            d.favorites.push({
+                id: 'fav_' + Date.now() + '_' + Math.random().toString(36).slice(2),
+                charId: charId,
+                charName: charName,
+                msgIdx: idx,
+                role: m.role,
+                text: m.text,
+                time: m.time,
+                savedAt: new Date().toISOString()
+            });
+            saveData(d);
+            self.toast('已收藏 ✦');
+        },
+
+        /* ====== 收藏板块页面 ====== */
+        openFavPage: function () {
+            var self = this;
+            var container = this.el;
+
+            var sub = document.createElement('div');
+            sub.className = 'chat-sub-page';
+
+            var d = loadData();
+            var favs = (d.favorites || []).slice().reverse(); /* 最新收藏在前 */
+
+            var html = '<div class="chat-sub-header">' +
+                '<button class="chat-back chat-sub-back">' +
+                '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+                '</button>' +
+                '<span class="chat-title">收藏</span>' +
+                '</div>' +
+                '<div class="chat-sub-body fav-body">';
+
+            if (favs.length === 0) {
+                html += '<div class="fav-empty">' +
+                    '<svg viewBox="0 0 24 24" width="48" height="48" stroke="#ccc" stroke-width="1.2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>' +
+                    '<div style="color:#bbb;font-size:14px;margin-top:10px">暂无收藏</div>' +
+                    '<div style="color:#ccc;font-size:12px;margin-top:4px">长按气泡 → 收藏</div>' +
+                    '</div>';
+            } else {
+                for (var i = 0; i < favs.length; i++) {
+                    var fav = favs[i];
+                    var isSticker = /^\s*\[表情包:\s*(https?:\/\/[^\]]+)\]\s*$/.test(fav.text);
+                    var stickerUrl = '';
+                    if (isSticker) {
+                        var sm = fav.text.match(/\[表情包:\s*(https?:\/\/[^\]]+)\]/);
+                        if (sm) stickerUrl = sm[1].trim();
+                    }
+                    var dateStr = '';
+                    try { dateStr = new Date(fav.savedAt).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { dateStr = ''; }
+                    var roleLabel = fav.role === 'user' ? '我' : escHtml(fav.charName);
+
+                    html += '<div class="fav-item" data-fav-id="' + fav.id + '">' +
+                        '<div class="fav-item-meta">' +
+                        '<span class="fav-item-who">' + roleLabel + '</span>' +
+                        '<span class="fav-item-time">' + dateStr + '</span>' +
+                        '<button class="fav-del-btn" data-fav-id="' + fav.id + '" title="取消收藏">' +
+                        '<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+                        '</button>' +
+                        '</div>';
+
+                    if (isSticker && stickerUrl) {
+                        html += '<div class="fav-item-sticker"><img src="' + escHtml(stickerUrl) + '" alt="表情包" style="max-width:120px;max-height:120px;border-radius:8px;display:block"></div>';
+                    } else {
+                        html += '<div class="fav-item-text">' + escHtml(fav.text) + '</div>';
+                    }
+
+                    html += '</div>';
+                }
+            }
+
+            html += '</div>'; /* chat-sub-body */
+
+            sub.innerHTML = html;
+            container.appendChild(sub);
+            requestAnimationFrame(function () { sub.classList.add('open'); });
+
+            /* 返回 */
+            sub.querySelector('.chat-sub-back').addEventListener('click', function () {
+                sub.classList.remove('open');
+                setTimeout(function () { sub.remove(); }, 350);
+            });
+
+            /* 删除收藏 */
+            sub.querySelector('.fav-body').addEventListener('click', function (e) {
+                var delBtn = e.target.closest('.fav-del-btn');
+                if (!delBtn) return;
+                var fid = delBtn.getAttribute('data-fav-id');
+                var d2 = loadData();
+                d2.favorites = (d2.favorites || []).filter(function (f) { return f.id !== fid; });
+                saveData(d2);
+                var itemEl = sub.querySelector('.fav-item[data-fav-id="' + fid + '"]');
+                if (itemEl) {
+                    itemEl.style.transition = 'opacity 0.2s';
+                    itemEl.style.opacity = '0';
+                    setTimeout(function () { itemEl.remove(); }, 200);
+                }
+                self.toast('已取消收藏');
+            });
         },
 
         /* ====== 重回（重新生成） ====== */

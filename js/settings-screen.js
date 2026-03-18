@@ -24,8 +24,41 @@
 
             var html = S.subHeader('屏幕调整') + '<div class="settings-body">';
 
-            /* 屏幕滤镜 */
-            html += '<div class="sf-label">屏幕滤镜</div>';
+            /* ── 屏幕位置偏移 ── */
+            html += '<div class="sf-label">屏幕位置适配</div>';
+            html += '<div class="sf-hint">iOS 添加到主屏幕后，如果内容被顶得太高，可在此向下调整屏幕起始位置</div>';
+
+            var offsetVal = (saved.offsetTop !== undefined) ? saved.offsetTop : 0;
+
+            html += '<div class="sf-offset-wrap">' +
+                /* 减少按钮 */
+                '<button class="sf-offset-btn" id="sf-offset-minus">' +
+                '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+                '</button>' +
+                /* 数值显示 */
+                '<div class="sf-offset-display">' +
+                '<span id="sf-offset-val">' + offsetVal + '</span>' +
+                '<span class="sf-offset-unit">px</span>' +
+                '</div>' +
+                /* 增加按钮 */
+                '<button class="sf-offset-btn" id="sf-offset-plus">' +
+                '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+                '</button>' +
+                '</div>';
+
+            /* 快捷预设 */
+            html += '<div class="sf-offset-presets">' +
+                '<button class="sf-preset-btn" data-offset="0">重置 0</button>' +
+                '<button class="sf-preset-btn" data-offset="20">+20</button>' +
+                '<button class="sf-preset-btn" data-offset="44">+44</button>' +
+                '<button class="sf-preset-btn" data-offset="54">+54</button>' +
+                '<button class="sf-preset-btn" data-offset="59">+59</button>' +
+                '</div>';
+
+            html += '<div class="sf-hint" style="margin-top:4px">💡 灵动岛机型推荐 +54，刘海机型推荐 +44，无刘海推荐 0</div>';
+
+            /* ── 屏幕滤镜 ── */
+            html += '<div class="sf-label" style="margin-top:20px">屏幕滤镜</div>';
             html += '<div class="sf-hint">为主屏幕应用视觉滤镜风格</div>';
             html += '<div class="sf-filter-grid" id="sf-filter-grid">';
             for (var i = 0; i < FILTERS.length; i++) {
@@ -40,8 +73,8 @@
             }
             html += '</div>';
 
-            /* 隐藏状态栏 */
-            html += '<div class="sf-label">状态栏</div>';
+            /* ── 隐藏状态栏 ── */
+            html += '<div class="sf-label" style="margin-top:20px">状态栏</div>';
             var hideChecked = saved.hideStatusBar ? ' checked' : '';
             html += '<div class="sf-toggle-row">' +
                 '<span class="sf-toggle-text">隐藏顶部状态栏</span>' +
@@ -60,8 +93,73 @@
         initPage: function (sub) {
             var S = window.Settings;
             var self = this;
+            var saved = S.loadSetting('screen') || {};
 
-            /* 滤镜选择 */
+            /* ── 偏移步进控制 ── */
+            var STEP = 1;
+            var MAX = 120;
+            var MIN = -30;
+            var currentOffset = (saved.offsetTop !== undefined) ? saved.offsetTop : 0;
+            var valEl = sub.querySelector('#sf-offset-val');
+
+            function updateOffsetDisplay() {
+                valEl.textContent = currentOffset;
+                /* 实时预览 */
+                self.applyOffset(currentOffset);
+            }
+
+            sub.querySelector('#sf-offset-minus').addEventListener('click', function () {
+                currentOffset = Math.max(MIN, currentOffset - STEP);
+                updateOffsetDisplay();
+            });
+
+            sub.querySelector('#sf-offset-plus').addEventListener('click', function () {
+                currentOffset = Math.min(MAX, currentOffset + STEP);
+                updateOffsetDisplay();
+            });
+
+            /* 长按快速调节 */
+            function bindLongPress(btn, fn) {
+                var timer = null;
+                var interval = null;
+                btn.addEventListener('mousedown', startHold);
+                btn.addEventListener('touchstart', startHold, { passive: true });
+                function startHold() {
+                    timer = setTimeout(function () {
+                        interval = setInterval(function () { fn(); }, 80);
+                    }, 400);
+                }
+                function stopHold() {
+                    clearTimeout(timer);
+                    clearInterval(interval);
+                }
+                btn.addEventListener('mouseup', stopHold);
+                btn.addEventListener('mouseleave', stopHold);
+                btn.addEventListener('touchend', stopHold);
+                btn.addEventListener('touchcancel', stopHold);
+            }
+
+            bindLongPress(sub.querySelector('#sf-offset-minus'), function () {
+                currentOffset = Math.max(MIN, currentOffset - STEP);
+                updateOffsetDisplay();
+            });
+            bindLongPress(sub.querySelector('#sf-offset-plus'), function () {
+                currentOffset = Math.min(MAX, currentOffset + STEP);
+                updateOffsetDisplay();
+            });
+
+            /* 快捷预设 */
+            var presetBtns = sub.querySelectorAll('.sf-preset-btn');
+            for (var pi = 0; pi < presetBtns.length; pi++) {
+                (function (btn) {
+                    btn.addEventListener('click', function () {
+                        currentOffset = parseInt(btn.getAttribute('data-offset'), 10);
+                        updateOffsetDisplay();
+                    });
+                })(presetBtns[pi]);
+            }
+
+            /* ── 滤镜选择 ── */
             var filterItems = sub.querySelectorAll('[data-filter]');
             for (var i = 0; i < filterItems.length; i++) {
                 (function (item) {
@@ -72,28 +170,33 @@
                 })(filterItems[i]);
             }
 
-            /* 保存 */
+            /* ── 保存 ── */
             sub.querySelector('#sf-screen-save').addEventListener('click', function () {
                 var activeFilter = sub.querySelector('[data-filter].active');
                 var hideStatusBar = sub.querySelector('#sf-hide-statusbar').checked;
 
                 var cfg = {
                     filter: activeFilter ? activeFilter.getAttribute('data-filter') : 'none',
-                    hideStatusBar: hideStatusBar
+                    hideStatusBar: hideStatusBar,
+                    offsetTop: currentOffset
                 };
 
                 S.saveSetting('screen', cfg);
                 self.applyFilter(cfg.filter);
                 self.applyStatusBar(cfg.hideStatusBar);
-                S.toast('屏幕设置已保存');
+                self.applyOffset(cfg.offsetTop);
+                S.toast('屏幕设置已保存 ✓');
             });
 
-            /* 清除 */
+            /* ── 清除 ── */
             sub.querySelector('#sf-screen-reset').addEventListener('click', function () {
                 if (!confirm('确定清除所有屏幕设置？')) return;
+                currentOffset = 0;
+                updateOffsetDisplay();
                 S.saveSetting('screen', {});
                 self.applyFilter('none');
                 self.applyStatusBar(false);
+                self.applyOffset(0);
                 S.toast('屏幕设置已清除');
             });
         },
@@ -117,12 +220,22 @@
             }
         },
 
+        /* ── 新增：应用屏幕垂直偏移 ── */
+        applyOffset: function (px) {
+            var container = document.getElementById('phone-container');
+            if (!container) return;
+            var val = parseInt(px, 10) || 0;
+            container.style.paddingTop = val > 0 ? val + 'px' : '';
+            container.style.marginTop = val < 0 ? val + 'px' : '';
+        },
+
         /* 启动时应用 */
         applyAll: function () {
             var S = window.Settings;
             var cfg = S.loadSetting('screen') || {};
             if (cfg.filter) this.applyFilter(cfg.filter);
             if (cfg.hideStatusBar) this.applyStatusBar(true);
+            if (cfg.offsetTop) this.applyOffset(cfg.offsetTop);  /* ← 新增 */
         }
     };
 
