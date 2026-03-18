@@ -51,6 +51,8 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    padding-top: var(--screen-offset, 0px);
+    /* ← 只加这一行 */
 }
 
 @media screen and (max-width: 500px) {

@@ -220,46 +220,41 @@
             }
         },
 
-        /* ── 应用屏幕垂直偏移 ──
-    原理：给 phone-container 加 paddingTop 把内容整体下推，
-          同时给 phone-shell 加等量负的 marginTop（clip 溢出），
-          让底部 Dock 不被遮挡、顶部多余空间被裁掉。        */
+        /* ── 应用全局屏幕垂直偏移（全页面生效） ── */
         applyOffset: function (px) {
             var val = parseInt(px, 10) || 0;
 
             var shell = document.getElementById('phone-shell');
             var container = document.getElementById('phone-container');
 
-            /* 先清除上次的设置 */
-            if (shell) {
-                shell.style.transform = '';
-                shell.style.webkitTransform = '';
-                shell.style.overflow = '';
-            }
+            /* ① 先完全清除上次所有干预 */
             if (container) {
-                container.style.transform = '';
-                container.style.webkitTransform = '';
-                container.style.paddingTop = '';
-                container.style.boxSizing = '';
+                container.style.cssText = container.style.cssText
+                    .replace(/top\s*:[^;]+;?/g, '')
+                    .replace(/bottom\s*:[^;]+;?/g, '')
+                    .replace(/height\s*:[^;]+;?/g, '');
+                container.style.top = '';
+                container.style.bottom = '';
                 container.style.height = '';
+            }
+            if (shell) {
+                shell.style.overflow = '';
             }
 
             if (val === 0) return;
 
-            /* 方案：phone-container 整体向下 translateY(val)，
-               phone-shell 设 overflow:hidden 裁掉顶部溢出，
-               同时让 phone-container 的高度补偿（shrink），
-               底部内容不被遮挡。                               */
+            /* ② 核心方案：
+               - 覆盖 inset 中的 top/bottom，用 top+height 代替 inset
+               - top = val（向下偏移）
+               - bottom 不设（让 height 控制）
+               - height = calc(100% - val)（缩减等量高度，底部不溢出）
+               - phone-shell overflow:hidden 裁掉顶部露出的背景        */
             if (container) {
-                /* 向下平移内容区 */
-                container.style.transform = 'translateY(' + val + 'px)';
-                container.style.webkitTransform = 'translateY(' + val + 'px)';
-                /* 同时缩减高度，使底部和 shell 底边对齐 */
-                container.style.height = 'calc(100% - ' + val + 'px)';
-                container.style.boxSizing = 'border-box';
+                container.style.setProperty('top', val + 'px', 'important');
+                container.style.setProperty('bottom', '0px', 'important');
+                container.style.setProperty('height', 'calc(100% - ' + val + 'px)', 'important');
             }
             if (shell) {
-                /* 裁掉上方因平移产生的空白 + 保证底部不溢出 */
                 shell.style.overflow = 'hidden';
             }
         },
